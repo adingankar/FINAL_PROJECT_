@@ -60,7 +60,7 @@ import seaborn as sns
 import os
 
 os.environ["PATH"] += os.pathsep + 'C:\\Program Files (x86)\\graphviz-2.38\\release\\bin'
-# os.environ["PATH"] += os.pathsep + 'C:\\Program Files (x86)\\graphviz-2.38\\release\\bin'
+
 # %%-----------------------------------------------------------------------
 
 
@@ -72,7 +72,7 @@ font_size_window = 'font-size:15px'
 
 class RandomForest(QMainWindow):
     #::--------------------------------------------------------------------------------
-    # Implementation of Random Forest Classifier using the happiness dataset
+    # Implementation of Random Forest Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
     #       initUi : creates the canvas and all the elements in the canvas
@@ -101,8 +101,8 @@ class RandomForest(QMainWindow):
 
         self.layout = QGridLayout(self.main_widget)
 
-        self.groupBox1 = QGroupBox('ML Random Forest Features')
-        self.groupBox1Layout = QGridLayout()  # Grid
+        self.groupBox1 = QGroupBox('Random Forest Features')
+        self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
 
         # We create a checkbox of each Features
@@ -126,8 +126,8 @@ class RandomForest(QMainWindow):
         self.txtNumberesti = QLineEdit(self)
         self.txtNumberesti.setText("10")
 
-        self.btnExecute = QPushButton("Execute RF")
-        self.btnExecute.clicked.connect(self.update)
+        self.btnExecute = QPushButton("Build Model")
+        self.btnExecute.clicked.connect(self.update1)
 
         self.btnRoc_Execute = QPushButton("Plot ROC")
         self.btnRoc_Execute.clicked.connect(self.roc_update)
@@ -240,25 +240,32 @@ class RandomForest(QMainWindow):
         self.setCentralWidget(self.main_widget)
         self.resize(1100, 700)
         self.show()
-
-    def update(self):
-        '''
-        Random Forest Classifier
-        We pupulate the dashboard using the parametres chosen by the user
-        The parameters are processed to execute in the skit-learn Random Forest algorithm
-          then the results are presented in graphics and reports in the canvas
-        :return:None
-        '''
-
-        # processing the parameters
-
+    def Message(self):
+        QMessageBox.about(self, "Warning", " You have not selected any features")
+    def update1(self):
         self.current_features = pd.DataFrame([])
+        self.notchecked=0
         for i in range(12):
             if self.feature[i].isChecked():
                 if len(self.current_features) == 0:
                     self.current_features = data[features_list[i]]
                 else:
                     self.current_features = pd.concat([self.current_features, data[features_list[i]]], axis=1)
+            else:
+                self.notchecked+=1
+        if self.notchecked==12:
+            self.Message()
+        else:
+            self.update()
+
+    def update(self):
+        '''
+        Random Forest Classifier
+        We populate the dashboard using the parameters chosen by the user
+        The parameters are processed to execute in the skit-learn Random Forest algorithm
+          then the results are presented in graphics and reports in the canvas
+        :return:None
+        '''
 
         vtest_per = float(self.txtPercentTest.text())
         n_esti = int(self.txtNumberesti.text())
@@ -277,10 +284,18 @@ class RandomForest(QMainWindow):
 
         # Assign the X and y to run the Random Forest Classifier
 
+        # X_data1 = pd.DataFrame([])
+        # X_data2 = pd.DataFrame([])
+        # X_data3 = pd.DataFrame([])
+
         X_data1 = pd.get_dummies(self.current_features.loc[:, self.current_features.dtypes == 'object'])
         X_data2 = self.current_features.loc[:, self.current_features.dtypes != 'object']
-
-        X_data3 = pd.concat([X_data1, X_data2], axis=1)
+        if len(X_data2.columns)==0:
+            X_data3=X_data1
+        elif len(X_data1.columns)==0:
+            X_data3=X_data2
+        else:
+            X_data3 = pd.concat([X_data1, X_data2], axis=1)
 
         X = X_data3.values
 
@@ -442,7 +457,7 @@ class RandomForest(QMainWindow):
 
 class DecisionTree(QMainWindow):
     #::--------------------------------------------------------------------------------
-    # Implementation of Random Forest Classifier using the happiness dataset
+    # Implementation of Decision Tree Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
     #       initUi : creates the canvas and all the elements in the canvas
@@ -460,7 +475,7 @@ class DecisionTree(QMainWindow):
         #::-----------------------------------------------------------------
         #  Create the canvas and all the element to create a dashboard with
         #  all the necessary elements to present the results from the algorithm
-        #  The canvas is divided using a  grid loyout to facilitate the drawing
+        #  The canvas is divided using a  grid layout to facilitate the drawing
         #  of the elements
         #::-----------------------------------------------------------------
 
@@ -471,8 +486,8 @@ class DecisionTree(QMainWindow):
 
         self.layout = QGridLayout(self.main_widget)
 
-        self.groupBox1 = QGroupBox('ML Decision Tree Features')
-        self.groupBox1Layout = QGridLayout()  # Grid
+        self.groupBox1 = QGroupBox('Decision Tree Features')
+        self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
 
         # We create a checkbox of each Features
@@ -494,8 +509,8 @@ class DecisionTree(QMainWindow):
         self.txtMaxDepth = QLineEdit(self)
         self.txtMaxDepth.setText("3")
 
-        self.btnExecute = QPushButton("Execute DT")
-        self.btnExecute.clicked.connect(self.update)
+        self.btnExecute = QPushButton("Build Model")
+        self.btnExecute.clicked.connect(self.update1)
 
         self.btnRoc_Execute = QPushButton("Plot ROC")
         self.btnRoc_Execute.clicked.connect(self.roc_update)
@@ -612,25 +627,35 @@ class DecisionTree(QMainWindow):
         self.setCentralWidget(self.main_widget)
         self.resize(1100, 700)
         self.show()
-
-    def update(self):
-        '''
-        Random Forest Classifier
-        We pupulate the dashboard using the parametres chosen by the user
-        The parameters are processed to execute in the skit-learn Random Forest algorithm
-          then the results are presented in graphics and reports in the canvas
-        :return:None
-        '''
-
+    def Message(self):
+        QMessageBox.about(self, "Warning", " You have not selected any features")
+    def update1(self):
         # processing the parameters
-
         self.current_features = pd.DataFrame([])
+        self.notchecked=0
         for i in range(12):
             if self.feature[i].isChecked():
                 if len(self.current_features) == 0:
                     self.current_features = data[features_list[i]]
                 else:
                     self.current_features = pd.concat([self.current_features, data[features_list[i]]], axis=1)
+            else:
+                self.notchecked+=1
+
+        if self.notchecked==12:
+            self.Message()
+        else:
+            self.update()
+
+    def update(self):
+        '''
+        Decision Tree Classifier
+        We pppulate the dashboard using the parameters chosen by the user
+        The parameters are processed to execute in the skit-learn Random Forest algorithm
+          then the results are presented in graphics and reports in the canvas
+        :return:None
+        '''
+
 
         vtest_per = float(self.txtPercentTest.text())
         vmax_depth = float(self.txtMaxDepth.text())
@@ -651,11 +676,16 @@ class DecisionTree(QMainWindow):
 
         # label encoding the categorical data
         class_le1 = LabelEncoder()
-        features_list1 = self.current_features.loc[:, self.current_features.dtypes == 'object'].columns
-        for i in features_list1:
-            self.current_features[i] = class_le1.fit_transform(self.current_features[i])
+        if self.notchecked==11:
+            self.current_features=class_le1.fit_transform(self.current_features)
+            X=self.current_features
+            X=X.reshape(-1,1)
+        else:
+            features_list1 = self.current_features.loc[:, self.current_features.dtypes == 'object'].columns
+            for i in features_list1:
+                self.current_features[i] = class_le1.fit_transform(self.current_features[i])
+            X = self.current_features.values
 
-        X = self.current_features.values
 
         y = data.iloc[:, -1]
 
@@ -667,9 +697,6 @@ class DecisionTree(QMainWindow):
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=vtest_per, random_state=100)
 
-        # self.X_test1=X_test
-        # self.y_test1=y_test
-        # perform training with entropy.
         #::------------------------------------
         ##  Model 1 - gini model:
 
@@ -783,7 +810,6 @@ class DecisionTree(QMainWindow):
         dialog = CanvasWindow(self)
 
         dialog.m.plot()
-        # roc_gini=plot_roc_curve(self.clf_df_gini,self.X_test,self.y_test,ax=dialog.m.ax)
         dialog.m.ax.plot(self.fpr_gini, self.tpr_gini, color='darkorange', lw=2,
                          label='ROC curve (area = %0.2f)' % self.auc_gini)
         dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
@@ -799,7 +825,6 @@ class DecisionTree(QMainWindow):
         # entropy model
         dialog = CanvasWindow(self)
         dialog.m.plot()
-        # roc_entropy=plot_roc_curve(self.clf_df_entropy,self.X_test1,self.y_test1,ax=dialog.m.ax)
         dialog.m.ax.plot(self.fpr_entropy, self.tpr_entropy, color='darkorange', lw=2,
                          label='ROC curve (area = %0.2f)' % self.auc_entropy)
         dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
@@ -838,11 +863,11 @@ class DecisionTree(QMainWindow):
 
 class SupportVector(QMainWindow):
     #::--------------------------------------------------------------------------------
-    # Implementation of Random Forest Classifier using the happiness dataset
+    # Implementation of Support Vector Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
     #       initUi : creates the canvas and all the elements in the canvas
-    #       update : populates the elements of the canvas base on the parametes
+    #       update : populates the elements of the canvas base on the parameters
     #               chosen by the user
     #::---------------------------------------------------------------------------------
     send_fig = pyqtSignal(str)
@@ -856,7 +881,7 @@ class SupportVector(QMainWindow):
         #::-----------------------------------------------------------------
         #  Create the canvas and all the element to create a dashboard with
         #  all the necessary elements to present the results from the algorithm
-        #  The canvas is divided using a  grid loyout to facilitate the drawing
+        #  The canvas is divided using a  grid layout to facilitate the drawing
         #  of the elements
         #::-----------------------------------------------------------------
 
@@ -867,7 +892,7 @@ class SupportVector(QMainWindow):
 
         self.layout = QGridLayout(self.main_widget)
 
-        self.groupBox1 = QGroupBox('ML Support Vector Features')
+        self.groupBox1 = QGroupBox('Support Vector Features')
         self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
 
@@ -892,8 +917,8 @@ class SupportVector(QMainWindow):
         self.txtKernelType = QLineEdit(self)
         self.txtKernelType.setText("rbf")
 
-        self.btnExecute = QPushButton("Execute SVC")
-        self.btnExecute.clicked.connect(self.update)
+        self.btnExecute = QPushButton("Build Model")
+        self.btnExecute.clicked.connect(self.update1)
 
         self.btnRoc_Execute = QPushButton("Plot ROC")
         self.btnRoc_Execute.clicked.connect(self.roc_update)
@@ -966,6 +991,25 @@ class SupportVector(QMainWindow):
         self.setCentralWidget(self.main_widget)
         self.resize(1100, 700)
         self.show()
+    def Message(self):
+        QMessageBox.about(self, "Warning", " You have not selected any features")
+    def update1(self):
+        # processing the parameters
+        self.current_features = pd.DataFrame([])
+        self.notchecked=0
+        for i in range(12):
+            if self.feature[i].isChecked():
+                if len(self.current_features) == 0:
+                    self.current_features = data[features_list[i]]
+                else:
+                    self.current_features = pd.concat([self.current_features, data[features_list[i]]], axis=1)
+            else:
+                self.notchecked+=1
+
+        if self.notchecked==12:
+            self.Message()
+        else:
+            self.update()
 
     def update(self):
         '''
@@ -975,16 +1019,6 @@ class SupportVector(QMainWindow):
           then the results are presented in graphics and reports in the canvas
         :return:None
         '''
-
-        # processing the parameters
-
-        self.current_features = pd.DataFrame([])
-        for i in range(12):
-            if self.feature[i].isChecked():
-                if len(self.current_features) == 0:
-                    self.current_features = data[features_list[i]]
-                else:
-                    self.current_features = pd.concat([self.current_features, data[features_list[i]]], axis=1)
 
         vtest_per = float(self.txtPercentTest.text())
         kernel1 = self.txtKernelType.text()
@@ -998,6 +1032,16 @@ class SupportVector(QMainWindow):
         vtest_per = vtest_per / 100
 
         # Assign the X and y to run the Random Forest Classifier
+        class_le1 = LabelEncoder()
+        if self.notchecked==11:
+            self.current_features=class_le1.fit_transform(self.current_features)
+            X=self.current_features
+            X=X.reshape(-1,1)
+        else:
+            features_list1 = self.current_features.loc[:, self.current_features.dtypes == 'object'].columns
+            for i in features_list1:
+                self.current_features[i] = class_le1.fit_transform(self.current_features[i])
+            X = self.current_features.values
 
         class_le1 = LabelEncoder()
         features_list1 = self.current_features.loc[:, self.current_features.dtypes == 'object'].columns
@@ -1151,7 +1195,7 @@ class Histogram_plots(QMainWindow):
         self.layout = QGridLayout(self.main_widget)
 
         self.groupBox1 = QGroupBox('Select One of the Features')
-        self.groupBox1Layout = QGridLayout()  # Grid
+        self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
 
         self.feature = []
@@ -1212,19 +1256,14 @@ class Histogram_plots(QMainWindow):
         for i in range(13):
             if self.feature[i].isChecked():
                 if len(self.current_features) > 1:
-                    # print("No")
                     self.Message()
                     work = 1
                     break
-                    # self.initUi()
 
-                    # self.update()
                 elif len(self.current_features) == 0:
                     self.current_features = data[features_list_hist[i]]
                     x_a = features_list_hist[i]
-
-                # else:
-                #     pass
+                    work=0
 
         if work == 0:
             self.ax1.clear()
@@ -1258,7 +1297,6 @@ class Scatter_plots(QMainWindow):
         self.groupBox1.setLayout(self.groupBox1Layout)
         self.work_x = 0
         self.work_y = 0
-        # self.current_features = pd.DataFrame([])
         self.feature1 = []
 
         for i in range(13):
@@ -1286,7 +1324,7 @@ class Scatter_plots(QMainWindow):
         self.groupBox1Layout.addWidget(self.btnSelectx, 2, 0)
 
         self.groupBox2 = QGroupBox('Select Y-variable here')
-        self.groupBox2Layout = QGridLayout()  # Grid
+        self.groupBox2Layout = QGridLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
 
         self.feature2 = []
@@ -1319,19 +1357,19 @@ class Scatter_plots(QMainWindow):
         self.groupBox2Layout.addWidget(self.btnSelecty, 6, 1)
         self.groupBox2Layout.addWidget(self.btnExecute, 7, 1)
 
-        self.fig1, self.ax1 = plt.subplots()
-        self.axes = [self.ax1]
-        self.canvas1 = FigureCanvas(self.fig1)
+        self.fig2, self.ax2 = plt.subplots()
+        self.axes = [self.ax2]
+        self.canvas2 = FigureCanvas(self.fig2)
 
-        self.canvas1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.canvas2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        self.canvas1.updateGeometry()
+        self.canvas2.updateGeometry()
 
         self.groupBoxG1 = QGroupBox('Scatter Plot :')
         self.groupBoxG1Layout = QVBoxLayout()
         self.groupBoxG1.setLayout(self.groupBoxG1Layout)
 
-        self.groupBoxG1Layout.addWidget(self.canvas1)
+        self.groupBoxG1Layout.addWidget(self.canvas2)
 
         self.layout.addWidget(self.groupBox1, 0, 1)
         self.layout.addWidget(self.groupBox2, 1, 0)
@@ -1359,13 +1397,6 @@ class Scatter_plots(QMainWindow):
                     self.current_x = data[features_list_hist[i]]
                     self.x_a = features_list_hist[i]
                     self.work_x = 0
-        # for i in range(13):
-        #     if self.feature1[i].isChecked():
-        #         if len(self.current_x)==0:
-        #             self.current_x = data[features_list_hist[i]]
-        #             self.x_a=features_list_hist[i]
-        #         else:
-        #             pass
 
     def select_y(self):
         self.current_y = pd.DataFrame([])
@@ -1380,23 +1411,16 @@ class Scatter_plots(QMainWindow):
                     self.current_y = data[features_list_hist[i]]
                     self.y_a = features_list_hist[i]
                     self.work_y = 0
-        # for i in range(13):
-        #     if self.feature2[i].isChecked():
-        #         if len(self.current_y)==0:
-        #             self.current_y = data[features_list_hist[i]]
-        #             self.y_a=features_list_hist[i]
-        #         else:
-        #             pass
 
     def update(self):
         if self.work_x == 0 and self.work_y == 0:
-            self.ax1.clear()
-            self.ax1.scatter(self.current_x, self.current_y)
-            self.ax1.set_title('Scatter plot : ' + self.y_a + ' vs ' + self.x_a)
-            self.ax1.set_xlabel(self.x_a)
-            self.ax1.set_ylabel(self.y_a)
-            self.fig1.tight_layout()
-            self.fig1.canvas.draw_idle()
+            self.ax2.clear()
+            self.ax2.scatter(self.current_x, self.current_y)
+            self.ax2.set_title('Scatter plot : ' + self.y_a + ' vs ' + self.x_a)
+            self.ax2.set_xlabel(self.x_a)
+            self.ax2.set_ylabel(self.y_a)
+            self.fig2.tight_layout()
+            self.fig2.canvas.draw_idle()
         elif self.work_x == 1 and self.work_y == 0:
             self.Message_x()
         elif self.work_x == 0 and self.work_y == 1:
@@ -1407,6 +1431,7 @@ class Scatter_plots(QMainWindow):
 
 
 class Data_find(QMainWindow):
+
     send_fig = pyqtSignal(str)
 
     def __init__(self):
@@ -1424,7 +1449,7 @@ class Data_find(QMainWindow):
 
         # Add a group to upload dataset
         self.groupBox1 = QGroupBox('Upload the dataset')
-        self.groupBox1Layout = QGridLayout()  # Grid
+        self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
 
         self.lblPath = QLabel('Paste your datset path :')
@@ -1480,7 +1505,8 @@ class Data_find(QMainWindow):
                 self.list1 += '\n' + name + '\n'
 
             self.txtResults1.appendPlainText(self.list1)
-
+            global upload1
+            upload1=1
         else:
             self.Message()
 
@@ -1506,7 +1532,7 @@ class App(QMainWindow):
         self.setWindowTitle(self.Title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.label5 = QLabel(self)
-        self.label5.setPixmap(QPixmap("C:\\Users\\Adina Dingankar\\OneDrive\\Desktop\\backg.jpg"))
+        self.label5.setPixmap(QPixmap("backg.jpg"))
         self.label5.setGeometry(0,-5,900,550)
 
         #::-----------------------------
@@ -1525,10 +1551,8 @@ class App(QMainWindow):
         label1.setFont(QtGui.QFont("Times", 16, QtGui.QFont.Bold))
         label1.move(200, 5)
         label1.resize(400, 350)
+
         fileMenu = mainMenu.addMenu('File')
-        # UploadMenu=mainMenu.addMenu(('Upload Dataset'))
-        # EDAMenu = mainMenu.addMenu('EDA Analysis')
-        # MLModelMenu = mainMenu.addMenu('ML Models')
 
         #::--------------------------------------
         # Exit application
@@ -1550,17 +1574,13 @@ class App(QMainWindow):
         l1.setText("<font color = white>Load Dataset</font>")
         l1.move(60,250)
         l1.setAlignment(QtCore.Qt.AlignCenter)
-
         l1.setStyleSheet("background-color:black")
+
         btn = QPushButton("Upload Data", self)
         btn.setStyleSheet('''font-size:15px;''')
         btn.clicked.connect(self.find_dataset)
         btn.resize(140, 40)
         btn.move(40, 290)
-        # Upload1Button = QAction(QIcon('analysis.jpg'),'Open', self)
-        # Upload1Button.setStatusTip('uploading the Dataset')
-        # Upload1Button.triggered.connect(self.find_dataset)
-        # UploadMenu.addAction(Upload1Button)
 
         #::----------------------------------------
         # EDA analysis
@@ -1577,7 +1597,7 @@ class App(QMainWindow):
         self.comboBox = QComboBox(self)
         self.comboBox.setGeometry(255, 290, 200, 40)
         self.comboBox.addItems(analysis_menu)
-        # self.comboBox.move(200,100)
+
         self.comboBox.setEditable(True)
         #self.comboBox.addItems(analysis_menu)
 
@@ -1592,7 +1612,7 @@ class App(QMainWindow):
         self.btn2 = QPushButton('Open', self)
         self.btn2.setGeometry(300, 340, 100, 35)
         self.btn2.clicked.connect(self.getComboValue)
-        # self.btn2.move(200,150)
+
         l3 = QLabel(self)
         l3.setText("<font color = white>ML Models</font>")
         l3.move(600, 250)
@@ -1603,7 +1623,6 @@ class App(QMainWindow):
         self.comboBox1 = QComboBox(self)
         self.comboBox1.setGeometry(540, 290, 210, 40)
         self.comboBox1.addItems(ml_menu)
-        # self.comboBox1.move(300,300)
         self.comboBox1.setEditable(True)
         #self.comboBox1.addItems(ml_menu)
 
@@ -1618,58 +1637,28 @@ class App(QMainWindow):
         self.btn3 = QPushButton('Open', self)
         self.btn3.setGeometry(600, 340, 100, 35)
         self.btn3.clicked.connect(self.getComboValue1)
-        # self.btn3.move(200,350)
-
-        # EDA1Button = QAction(QIcon('analysis.jpg'),'histograms', self)
-        # EDA1Button.setStatusTip('histograms')
-        # EDA1Button.triggered.connect(self.EDA1)
-        # EDAMenu.addAction(EDA1Button)
-
-        # EDA2Button = QAction(QIcon('analysis.jpg'),'scatter plots', self)
-        # EDA2Button.setStatusTip('scatter plots')
-        # EDA2Button.triggered.connect(self.EDA2)
-        # EDAMenu.addAction(EDA2Button)
-
-        #::--------------------------------------------------
-        # Decision Tree Model
-        #::--------------------------------------------------
-        # MLModel1Button =  QAction(QIcon('model.jpg'), 'Decision Tree Entropy', self)
-        # MLModel1Button.setStatusTip('ML algorithm with Entropy ')
-        # MLModel1Button.triggered.connect(self.MLDT)
-
-        #::------------------------------------------------------
-        # Random Forest Classifier
-        #::------------------------------------------------------
-        # MLModel2Button = QAction(QIcon('model.jpg'), 'Random Forest Classifier', self)
-        # MLModel2Button.setStatusTip('Random Forest Classifier ')
-        # MLModel2Button.triggered.connect(self.MLRF)
-
-        #::------------------------------------------------------
-        # Support Vector Classifier
-        #::------------------------------------------------------
-        # MLModel3Button = QAction(QIcon('model.jpg'), 'Support Vector Classifier', self)
-        # MLModel3Button.setStatusTip('Support Vector Classifier')
-        # MLModel3Button.triggered.connect(self.MLSVM)
-
-        # MLModelMenu.addAction(MLModel1Button)
-        # MLModelMenu.addAction(MLModel2Button)
-        # MLModelMenu.addAction(MLModel3Button)
 
         self.dialogs = list()
 
     def getComboValue(self):
-        if self.comboBox.currentText() == 'Histogram':
-            self.EDA1()
+        if upload1==0:
+            self.Message_up()
         else:
-            self.EDA2()
+            if self.comboBox.currentText() == 'Histogram':
+                self.EDA1()
+            else:
+                self.EDA2()
 
     def getComboValue1(self):
-        if self.comboBox1.currentText() == 'Decision Tree Classifier':
-            self.MLDT()
-        elif self.comboBox1.currentText() == 'Random Forest Classifier':
-            self.MLRF()
+        if upload1==0:
+            self.Message_up()
         else:
-            self.MLSVM()
+            if self.comboBox1.currentText() == 'Decision Tree Classifier':
+                self.MLDT()
+            elif self.comboBox1.currentText() == 'Random Forest Classifier':
+                self.MLRF()
+            else:
+                self.MLSVM()
 
     def find_dataset(self):
         dialog = Data_find()
@@ -1725,12 +1714,16 @@ class App(QMainWindow):
         dialog = SupportVector()
         self.dialogs.append(dialog)
         dialog.show()
+    def Message_up(self):
+        QMessageBox.about(self, "Warning", " You have not Uploaded the data")
 
 
 def main():
     #::-------------------------------------------------
     # Initiates the application
     #::-------------------------------------------------
+    global upload1
+    upload1=0
     app = QApplication(sys.argv)
     app.setStyle('Breeze')
     ex = App()
@@ -1738,29 +1731,8 @@ def main():
     sys.exit(app.exec_())
 
 
-# def data_hr():
-#     #::--------------------------------------------------
-#     # read the .csv file of HR data
-#     # save column names of X- variable as a list
-#     # save class_names of target 0-no job change and 1 - job change
-#     #::--------------------------------------------------
-#     global data
-#     global features_list
-#     global class_names
-#     global features_list_hist
-#     data = pd.read_csv('pranay.csv')
-#     data.drop(["enrollee_id"], axis=1, inplace=True)
-#
-#     data = data.apply(lambda x: x.fillna(x.value_counts().index[0]))
-#
-#     features_list = data.iloc[:,:-1].columns
-#     features_list_hist = data.columns
-#     class_names = ['nojob change','job change']
-
-
 if __name__ == '__main__':
     #::------------------------------------
     # First reads the data then calls for the application
     #::------------------------------------
-    # data_hr()
     main()
