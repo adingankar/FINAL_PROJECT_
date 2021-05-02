@@ -5,9 +5,12 @@
 ### Data Mining
 ##################################################
 
+
+#################################
+## Load the packages 
+#################################
 import sys
 
-# from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QComboBox, QLabel, QGridLayout, QCheckBox, QGroupBox
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QPushButton, QAction, QComboBox, QLabel,
                              QGridLayout, QCheckBox, QGroupBox, QVBoxLayout, QHBoxLayout, QLineEdit, QPlainTextEdit)
 from PyQt5 import QtCore
@@ -75,9 +78,9 @@ class RandomForest(QMainWindow):
     # Implementation of Random Forest Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
-    #       initUi : creates the canvas and all the elements in the canvas
-    #       update : populates the elements of the canvas base on the parametes
-    #               chosen by the user
+    #       initUi : creates the canvas and add all the elements in the canvas
+    #       update : populates the elements of the canvas based on the parameters
+    #                chosen by the user
     #::---------------------------------------------------------------------------------
     send_fig = pyqtSignal(str)
 
@@ -263,8 +266,8 @@ class RandomForest(QMainWindow):
         Random Forest Classifier
         We populate the dashboard using the parameters chosen by the user
         The parameters are processed to execute in the skit-learn Random Forest algorithm
-          then the results are presented in graphics and reports in the canvas
-        :return:None
+        then the results are presented in graphics and reports in the canvas
+        
         '''
 
         vtest_per = float(self.txtPercentTest.text())
@@ -283,10 +286,6 @@ class RandomForest(QMainWindow):
         vtest_per = vtest_per / 100
 
         # Assign the X and y to run the Random Forest Classifier
-
-        # X_data1 = pd.DataFrame([])
-        # X_data2 = pd.DataFrame([])
-        # X_data3 = pd.DataFrame([])
 
         X_data1 = pd.get_dummies(self.current_features.loc[:, self.current_features.dtypes == 'object'])
         X_data2 = self.current_features.loc[:, self.current_features.dtypes != 'object']
@@ -311,9 +310,7 @@ class RandomForest(QMainWindow):
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=vtest_per, random_state=100)
 
-        # perform training with entropy.
-        # Decision tree with entropy
-
+        
         #::------------------------------------
         ##  Model 1 - gini model:
 
@@ -460,7 +457,7 @@ class DecisionTree(QMainWindow):
     # Implementation of Decision Tree Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
-    #       initUi : creates the canvas and all the elements in the canvas
+    #       initUi : creates the canvas and add all the elements in the canvas
     #       update : populates the elements of the canvas base on the parametes
     #               chosen by the user
     #::---------------------------------------------------------------------------------
@@ -789,7 +786,7 @@ class DecisionTree(QMainWindow):
         self.auc_entropy = roc_auc_score(y_test, y_pred_score_entropy[:, 1])
 
         #::------------------------------------
-        ##  Ghaph2 :
+        ##  Graph2 :
         ##  Confusion Matrix - entropy model
         #::------------------------------------
 
@@ -866,8 +863,8 @@ class SupportVector(QMainWindow):
     # Implementation of Support Vector Classifier using the HR dataset
     # the methods in this class are
     #       _init_ : initialize the class
-    #       initUi : creates the canvas and all the elements in the canvas
-    #       update : populates the elements of the canvas base on the parameters
+    #       initUi : creates the canvas and add all the elements in the canvas
+    #       update : populates the elements of the canvas based on the parameters
     #               chosen by the user
     #::---------------------------------------------------------------------------------
     send_fig = pyqtSignal(str)
@@ -1017,7 +1014,7 @@ class SupportVector(QMainWindow):
         We pupulate the dashboard using the parametres chosen by the user
         The parameters are processed to execute in the skit-learn Random Forest algorithm
           then the results are presented in graphics and reports in the canvas
-        :return:None
+        
         '''
 
         vtest_per = float(self.txtPercentTest.text())
@@ -1031,7 +1028,7 @@ class SupportVector(QMainWindow):
 
         vtest_per = vtest_per / 100
 
-        # Assign the X and y to run the Random Forest Classifier
+        # Assign the X and y to run the support vector classifier
         class_le1 = LabelEncoder()
         if self.notchecked==11:
             self.current_features=class_le1.fit_transform(self.current_features)
@@ -1102,7 +1099,7 @@ class SupportVector(QMainWindow):
         self.auc = roc_auc_score(y_test, y_pred_score)
 
         #::------------------------------------
-        ##  Ghaph1 :
+        ##  Graph1 :
         ##  Confusion Matrix
         #::------------------------------------
 
@@ -1155,7 +1152,7 @@ class PlotCanvas(FigureCanvas):
 
 class CanvasWindow(QMainWindow):
     #::----------------------------------
-    # Creates a canvaas containing the plot for the initial analysis
+    # Creates a canvas containing the plot for the initial analysis
     # ;;----------------------------------
     def __init__(self, parent=None):
         super(CanvasWindow, self).__init__(parent)
@@ -1176,7 +1173,9 @@ class CanvasWindow(QMainWindow):
         self.m = PlotCanvas(self, width=5, height=4)
         self.m.move(0, 30)
 
-
+#-----------------------------------
+# Class to display the histogram window
+#----------------------------------
 class Histogram_plots(QMainWindow):
     send_fig = pyqtSignal(str)
 
@@ -1273,7 +1272,9 @@ class Histogram_plots(QMainWindow):
             self.ax1.set_ylabel('frequency')
             self.fig1.tight_layout()
             self.fig1.canvas.draw_idle()
-
+#----------------------------------------------
+# Class to display the scatter plot window
+#-----------------------------------------------
 
 class Scatter_plots(QMainWindow):
     send_fig = pyqtSignal(str)
@@ -1428,7 +1429,9 @@ class Scatter_plots(QMainWindow):
         elif self.work_x == 1 and self.work_y == 1:
             self.Message_x()
             self.Message_y()
-
+#---------------------------------------------------------
+# Class to take dataset from user
+#----------------------------------------------------------
 
 class Data_find(QMainWindow):
 
@@ -1527,7 +1530,7 @@ class App(QMainWindow):
 
     def initUI(self):
         #::-------------------------------------------------
-        # Creates the manu and the items
+        # Creates the menu and the items
         #::-------------------------------------------------
         self.setWindowTitle(self.Title)
         self.setGeometry(self.left, self.top, self.width, self.height)
@@ -1537,7 +1540,7 @@ class App(QMainWindow):
 
         #::-----------------------------
         # Create the menu bar
-        # and three items for the menu, File, EDA Analysis and ML Models
+        # and setsup UI with buttons to load dataset, EDA Analysis, ML models
         #::-----------------------------
         mainMenu = self.menuBar()
         mainMenu.setStyleSheet("color: white;"
@@ -1586,6 +1589,8 @@ class App(QMainWindow):
         # EDA analysis
         # create a histogram of choice
         # Create a scatterplot of choice
+        # ML models
+        # Create DT, RF, SVC of choice
         #::----------------------------------------
         l2 = QLabel(self)
         l2.setText("<font color = white>EDA Analysis</font>")
