@@ -1673,9 +1673,6 @@ class App(QMainWindow):
     def EDA1(self):
         #::------------------------------------------------------
         # Creates the histogram
-        # The X variable contains the happiness.score
-        # X was populated in the method data_happiness()
-        # at the start of the application
         #::------------------------------------------------------
         dialog = Histogram_plots()
         self.dialogs.append(dialog)
@@ -1683,10 +1680,7 @@ class App(QMainWindow):
 
     def EDA2(self):
         #::------------------------------------------------------
-        # Creates the histogram
-        # The X variable contains the happiness.score
-        # X was populated in the method data_happiness()
-        # at the start of the application
+        # Creates the scatter plot
         #::------------------------------------------------------
         dialog = Scatter_plots()
         self.dialogs.append(dialog)
@@ -1695,8 +1689,7 @@ class App(QMainWindow):
     def MLDT(self):
         #::-----------------------------------------------------------
         # This function creates an instance of the DecisionTree class
-        # This class presents a dashboard for a Decision Tree Algorithm
-        # using the happiness dataset
+        # using the HR Analytics dataset 
         #::-----------------------------------------------------------
         dialog = DecisionTree()
         self.dialogs.append(dialog)
@@ -1705,7 +1698,7 @@ class App(QMainWindow):
     def MLRF(self):
         #::-------------------------------------------------------------
         # This function creates an instance of the Random Forest Classifier Algorithm
-        # using the happiness dataset
+        # using the HR Analytics dataset
         #::-------------------------------------------------------------
         dialog = RandomForest()
         self.dialogs.append(dialog)
@@ -1713,8 +1706,8 @@ class App(QMainWindow):
 
     def MLSVM(self):
         #::-------------------------------------------------------------
-        # This function creates an instance of the Random Forest Classifier Algorithm
-        # using the happiness dataset
+        # This function creates an instance of the Support Vector Classifier Algorithm
+        # using the HR Analytics dataset
         #::-------------------------------------------------------------
         dialog = SupportVector()
         self.dialogs.append(dialog)
