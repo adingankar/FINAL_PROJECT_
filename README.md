@@ -11,7 +11,7 @@ The final application is GUI based to display the end-to-end modelling
 	Code – This folder contains the code, images used in the code, PDF of tree models, Dataset
 	Final _Group _Presentation – This folder has the PDF version of group project presentation
 	Final_Group_Project_Report – This folder includes the complete report of the project in PDF format.
-  Individual_Project – This folder contains the folders of report and codes of the group members.
+  	Individual_Project – This folder contains the folders of report and codes of the group members.
 
 
 
