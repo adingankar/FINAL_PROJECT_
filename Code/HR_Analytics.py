@@ -310,7 +310,7 @@ class RandomForest(QMainWindow):
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=vtest_per, random_state=100)
 
-        
+
         #::------------------------------------
         ##  Model 1 - gini model:
 
@@ -419,36 +419,34 @@ class RandomForest(QMainWindow):
 
     def roc_update(self):
         # gini model
-        dialog = CanvasWindow(self)
+        dialog = ROC_Main(self)
 
-        dialog.m.plot()
-        # roc_gini=plot_roc_curve(self.clf_df_gini,self.X_test,self.y_test,ax=dialog.m.ax)
-        dialog.m.ax.plot(self.fpr_gini, self.tpr_gini, color='darkorange', lw=2,
+        dialog.roc.plot()
+        dialog.roc.ax.plot(self.fpr_gini, self.tpr_gini, color='#90EE90', lw=3,
                          label='ROC curve (area = %0.2f)' % self.auc_gini)
-        dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        dialog.m.ax.set_title('ROC of Gini model')
-        dialog.m.ax.set_xlim([0.0, 1.0])
-        dialog.m.ax.set_ylim([0.0, 1.05])
-        dialog.m.ax.set_xlabel("False Positive Rate")
-        dialog.m.ax.set_ylabel("True Positive Rate")
-        dialog.m.ax.legend(loc="lower right")
-        dialog.m.draw()
+        dialog.roc.ax.plot([0, 1], [0, 1], color='blue', lw=3, linestyle='--')
+        dialog.roc.ax.set_title('ROC of Gini model')
+        dialog.roc.ax.set_xlim([0.0, 1.0])
+        dialog.roc.ax.set_ylim([0.0, 1.0])
+        dialog.roc.ax.set_xlabel("False Positive Rate")
+        dialog.roc.ax.set_ylabel("True Positive Rate")
+        dialog.roc.ax.legend(loc="lower right")
+        dialog.roc.draw()
         dialog.show()
 
         # entropy model
-        dialog = CanvasWindow(self)
-        dialog.m.plot()
-        # roc_entropy=plot_roc_curve(self.clf_df_entropy,self.X_test1,self.y_test1,ax=dialog.m.ax)
-        dialog.m.ax.plot(self.fpr_entropy, self.tpr_entropy, color='darkorange', lw=2,
+        dialog = ROC_Main(self)
+        dialog.roc.plot()
+        dialog.roc.ax.plot(self.fpr_entropy, self.tpr_entropy, color='#90EE90', lw=3,
                          label='ROC curve (area = %0.2f)' % self.auc_entropy)
-        dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        dialog.m.ax.set_title('ROC of Entropy model')
-        dialog.m.ax.set_xlim([0.0, 1.0])
-        dialog.m.ax.set_ylim([0.0, 1.05])
-        dialog.m.ax.set_xlabel("False Positive Rate")
-        dialog.m.ax.set_ylabel("True Positive Rate")
-        dialog.m.ax.legend(loc="lower right")
-        dialog.m.draw()
+        dialog.roc.ax.plot([0, 1], [0, 1], color='blue', lw=3, linestyle='--')
+        dialog.roc.ax.set_title('ROC of Entropy model')
+        dialog.roc.ax.set_xlim([0.0, 1.0])
+        dialog.roc.ax.set_ylim([0.0, 1.0])
+        dialog.roc.ax.set_xlabel("False Positive Rate")
+        dialog.roc.ax.set_ylabel("True Positive Rate")
+        dialog.roc.ax.legend(loc="lower right")
+        dialog.roc.draw()
         dialog.show()
 
 
@@ -700,8 +698,7 @@ class DecisionTree(QMainWindow):
         #::------------------------------------
 
         # specify random forest classifier
-        self.clf_df_gini = DecisionTreeClassifier(criterion="gini", random_state=100, max_depth=vmax_depth,
-                                                  min_samples_leaf=5)
+        self.clf_df_gini = DecisionTreeClassifier(criterion="gini", random_state=100, max_depth=vmax_depth)
 
         # perform training
         self.clf_df_gini.fit(X_train, y_train)
@@ -755,8 +752,7 @@ class DecisionTree(QMainWindow):
         #::------------------------------------
 
         # specify random forest classifier
-        self.clf_df_entropy = DecisionTreeClassifier(criterion="entropy", random_state=100, max_depth=vmax_depth,
-                                                     min_samples_leaf=5)
+        self.clf_df_entropy = DecisionTreeClassifier(criterion="entropy", random_state=100, max_depth=vmax_depth)
 
         # perform training
         self.clf_df_entropy.fit(X_train, y_train)
@@ -804,40 +800,40 @@ class DecisionTree(QMainWindow):
 
     def roc_update(self):
         # gini model
-        dialog = CanvasWindow(self)
+        dialog = ROC_Main(self)
 
-        dialog.m.plot()
-        dialog.m.ax.plot(self.fpr_gini, self.tpr_gini, color='darkorange', lw=2,
+        dialog.roc.plot()
+        dialog.roc.ax.plot(self.fpr_gini, self.tpr_gini, color='#90EE90', lw=3,
                          label='ROC curve (area = %0.2f)' % self.auc_gini)
-        dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        dialog.m.ax.set_title('ROC of Gini model')
-        dialog.m.ax.set_xlim([0.0, 1.0])
-        dialog.m.ax.set_ylim([0.0, 1.05])
-        dialog.m.ax.set_xlabel("False Positive Rate")
-        dialog.m.ax.set_ylabel("True Positive Rate")
-        dialog.m.ax.legend(loc="lower right")
-        dialog.m.draw()
+        dialog.roc.ax.plot([0, 1], [0, 1], color='blue', lw=3, linestyle='--')
+        dialog.roc.ax.set_title('ROC of Gini model')
+        dialog.roc.ax.set_xlim([0.0, 1.0])
+        dialog.roc.ax.set_ylim([0.0, 1.0])
+        dialog.roc.ax.set_xlabel("False Positive Rate")
+        dialog.roc.ax.set_ylabel("True Positive Rate")
+        dialog.roc.ax.legend(loc="lower right")
+        dialog.roc.draw()
         dialog.show()
 
         # entropy model
-        dialog = CanvasWindow(self)
-        dialog.m.plot()
-        dialog.m.ax.plot(self.fpr_entropy, self.tpr_entropy, color='darkorange', lw=2,
+        dialog = ROC_Main(self)
+        dialog.roc.plot()
+        dialog.roc.ax.plot(self.fpr_entropy, self.tpr_entropy, color='#90EE90', lw=3,
                          label='ROC curve (area = %0.2f)' % self.auc_entropy)
-        dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        dialog.m.ax.set_title('ROC of Entropy model')
-        dialog.m.ax.set_xlim([0.0, 1.0])
-        dialog.m.ax.set_ylim([0.0, 1.05])
-        dialog.m.ax.set_xlabel("False Positive Rate")
-        dialog.m.ax.set_ylabel("True Positive Rate")
-        dialog.m.ax.legend(loc="lower right")
-        dialog.m.draw()
+        dialog.roc.ax.plot([0, 1], [0, 1], color='blue', lw=3, linestyle='--')
+        dialog.roc.ax.set_title('ROC of Entropy model')
+        dialog.roc.ax.set_xlim([0.0, 1.0])
+        dialog.roc.ax.set_ylim([0.0, 1.0])
+        dialog.roc.ax.set_xlabel("False Positive Rate")
+        dialog.roc.ax.set_ylabel("True Positive Rate")
+        dialog.roc.ax.legend(loc="lower right")
+        dialog.roc.draw()
         dialog.show()
 
     def view_tree(self):
         '''
         Executes the graphviz to create a tree view of the information
-         then it presents the graphic in a pdf formt using webbrowser
+         then it presents the graphic in a pdf format using webbrowser
         :return:None
         '''
 
@@ -1014,7 +1010,7 @@ class SupportVector(QMainWindow):
         We pupulate the dashboard using the parametres chosen by the user
         The parameters are processed to execute in the skit-learn Random Forest algorithm
           then the results are presented in graphics and reports in the canvas
-        
+
         '''
 
         vtest_per = float(self.txtPercentTest.text())
@@ -1116,26 +1112,26 @@ class SupportVector(QMainWindow):
         self.fig1.canvas.draw_idle()
 
     def roc_update(self):
-        dialog = CanvasWindow(self)
-        dialog.m.plot()
-        dialog.m.ax.plot(self.fpr, self.tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % self.auc)
-        dialog.m.ax.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        dialog.m.ax.set_title('Receiver operating characteristic example')
-        dialog.m.ax.set_xlim([0.0, 1.0])
-        dialog.m.ax.set_ylim([0.0, 1.05])
-        dialog.m.ax.set_xlabel("False Positive Rate")
-        dialog.m.ax.set_ylabel("True Positive Rate")
-        dialog.m.ax.legend(loc="lower right")
-        dialog.m.draw()
+        dialog = ROC_Main(self)
+        dialog.roc.plot()
+        dialog.roc.ax.plot(self.fpr, self.tpr, color='#90EE90', lw=3, label='ROC curve (area = %0.2f)' % self.auc)
+        dialog.roc.ax.plot([0, 1], [0, 1], color='blue', lw=3, linestyle='--')
+        dialog.roc.ax.set_title('ROC of SVC model')
+        dialog.roc.ax.set_xlim([0.0, 1.0])
+        dialog.roc.ax.set_ylim([0.0, 1.0])
+        dialog.roc.ax.set_xlabel("False Positive Rate")
+        dialog.roc.ax.set_ylabel("True Positive Rate")
+        dialog.roc.ax.legend(loc="lower right")
+        dialog.roc.draw()
         dialog.show()
 
 
-class PlotCanvas(FigureCanvas):
+class ROC_Plot(FigureCanvas):
     #::----------------------------------------------------------
     # creates a figure on the canvas
-    # later on this element will be used to draw a histogram graph
+    # later on this element will be used to draw a ROC curve
     #::----------------------------------------------------------
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=7, height=6, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
 
         FigureCanvas.__init__(self, fig)
@@ -1150,18 +1146,18 @@ class PlotCanvas(FigureCanvas):
         self.ax = self.figure.add_subplot(111)
 
 
-class CanvasWindow(QMainWindow):
+class ROC_Main(QMainWindow):
     #::----------------------------------
-    # Creates a canvas containing the plot for the initial analysis
+    # Creates a canvas containing the plot for the ROC curve
     # ;;----------------------------------
     def __init__(self, parent=None):
-        super(CanvasWindow, self).__init__(parent)
+        super(ROC_Main, self).__init__(parent)
 
-        self.left = 200
-        self.top = 200
-        self.Title = 'Distribution'
-        self.width = 500
-        self.height = 500
+        self.left = 250
+        self.top = 250
+        self.Title = 'ROC curve'
+        self.width = 700
+        self.height = 600
         self.initUI()
 
     def initUI(self):
@@ -1170,8 +1166,7 @@ class CanvasWindow(QMainWindow):
 
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.m = PlotCanvas(self, width=5, height=4)
-        self.m.move(0, 30)
+        self.roc = ROC_Plot(self, width=7, height=6)
 
 #-----------------------------------
 # Class to display the histogram window
@@ -1536,7 +1531,7 @@ class App(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.label5 = QLabel(self)
         self.label5.setPixmap(QPixmap("backg.jpg"))
-        self.label5.setGeometry(0,-5,900,550)
+        self.label5.setGeometry(0,-10,900,550)
 
         #::-----------------------------
         # Create the menu bar
@@ -1604,7 +1599,6 @@ class App(QMainWindow):
         self.comboBox.addItems(analysis_menu)
 
         self.comboBox.setEditable(True)
-        #self.comboBox.addItems(analysis_menu)
 
         # getting the line edit of combo box
         line_edit = self.comboBox.lineEdit()
@@ -1629,7 +1623,6 @@ class App(QMainWindow):
         self.comboBox1.setGeometry(540, 290, 210, 40)
         self.comboBox1.addItems(ml_menu)
         self.comboBox1.setEditable(True)
-        #self.comboBox1.addItems(ml_menu)
 
         # getting the line edit of combo box
         line_edit1 = self.comboBox1.lineEdit()
