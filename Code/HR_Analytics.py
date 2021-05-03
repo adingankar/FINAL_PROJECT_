@@ -135,6 +135,9 @@ class RandomForest(QMainWindow):
         self.btnRoc_Execute = QPushButton("Plot ROC")
         self.btnRoc_Execute.clicked.connect(self.roc_update)
 
+        self.btnImp_Execute = QPushButton("Imp_Features")
+        self.btnImp_Execute.clicked.connect(self.imp_update)
+
         self.groupBox1Layout.addWidget(self.feature[0], 0, 0)
         self.groupBox1Layout.addWidget(self.feature[1], 0, 1)
         self.groupBox1Layout.addWidget(self.feature[2], 1, 0)
@@ -153,6 +156,7 @@ class RandomForest(QMainWindow):
         self.groupBox1Layout.addWidget(self.txtNumberesti, 8, 1)
         self.groupBox1Layout.addWidget(self.btnExecute, 9, 0)
         self.groupBox1Layout.addWidget(self.btnRoc_Execute, 9, 1)
+        self.groupBox1Layout.addWidget(self.btnImp_Execute, 10, 0)
 
         self.groupBox2 = QGroupBox('Results from the Gini model')
         self.groupBox2Layout = QVBoxLayout()
@@ -285,18 +289,18 @@ class RandomForest(QMainWindow):
 
         vtest_per = vtest_per / 100
 
-        # Assign the X and y to run the Random Forest Classifier
+        # # label encoding the categorical data
+        class_le1 = LabelEncoder()
 
-        X_data1 = pd.get_dummies(self.current_features.loc[:, self.current_features.dtypes == 'object'])
-        X_data2 = self.current_features.loc[:, self.current_features.dtypes != 'object']
-        if len(X_data2.columns)==0:
-            X_data3=X_data1
-        elif len(X_data1.columns)==0:
-            X_data3=X_data2
+        if self.notchecked==11:
+            self.current_features=class_le1.fit_transform(self.current_features)
+            X=self.current_features
+            X=X.reshape(-1,1)
         else:
-            X_data3 = pd.concat([X_data1, X_data2], axis=1)
-
-        X = X_data3.values
+            features_list1 = self.current_features.loc[:, self.current_features.dtypes == 'object'].columns
+            for i in features_list1:
+                self.current_features[i] = class_le1.fit_transform(self.current_features[i])
+            X = self.current_features.values
 
         y = data.iloc[:, -1]
 
@@ -347,6 +351,19 @@ class RandomForest(QMainWindow):
 
         self.fpr_gini, self.tpr_gini, _ = roc_curve(y_test, y_pred_score_gini[:, 1])
         self.auc_gini = roc_auc_score(y_test, y_pred_score_gini[:, 1])
+
+        #important features
+
+        importances_gini = self.clf_rf_gini.feature_importances_
+
+        # convert the importances into one-dimensional 1darray with corresponding df column names as axis labels
+        f_importances_gini = pd.Series(importances_gini, self.current_features.columns)
+
+        # sort the array in descending order of the importances
+        f_importances_gini.sort_values(ascending=True, inplace=True)
+
+        self.X_Features_gini = f_importances_gini.index
+        self.y_Importance_gini = list(f_importances_gini)
 
         #::------------------------------------
         ##  Ghaph1 :
@@ -400,6 +417,19 @@ class RandomForest(QMainWindow):
         self.fpr_entropy, self.tpr_entropy, _ = roc_curve(y_test, y_pred_score_entropy[:, 1])
         self.auc_entropy = roc_auc_score(y_test, y_pred_score_entropy[:, 1])
 
+        #important features
+
+        importances_entropy = self.clf_rf_entropy.feature_importances_
+
+        # convert the importances into one-dimensional 1darray with corresponding df column names as axis labels
+        f_importances_entropy = pd.Series(importances_entropy, self.current_features.columns)
+
+        # sort the array in descending order of the importances
+        f_importances_entropy.sort_values(ascending=True, inplace=True)
+
+        self.X_Features_entropy = f_importances_entropy.index
+        self.y_Importance_entropy = list(f_importances_entropy)
+
         #::------------------------------------
         ##  Ghaph2 :
         ##  Confusion Matrix - entropy model
@@ -449,6 +479,30 @@ class RandomForest(QMainWindow):
         dialog.roc.draw()
         dialog.show()
 
+    def imp_update(self):
+        # gini model
+        dialog = Imp_Main(self)
+
+        dialog.imp.plot()
+        dialog.imp.ax.barh(self.X_Features_gini, self.y_Importance_gini)
+        dialog.imp.ax.set_title('Important features - Gini model')
+        dialog.imp.ax.set_xlabel("Importance")
+        dialog.imp.ax.set_ylabel("Features")
+        dialog.imp.fig.tight_layout()
+        dialog.imp.draw()
+        dialog.show()
+
+        # entropy model
+        dialog = Imp_Main(self)
+
+        dialog.imp.plot()
+        dialog.imp.ax.barh(self.X_Features_entropy, self.y_Importance_entropy)
+        dialog.imp.ax.set_title('Important features - Entropy model')
+        dialog.imp.ax.set_xlabel("Importance")
+        dialog.imp.ax.set_ylabel("Features")
+        dialog.imp.fig.tight_layout()
+        dialog.imp.draw()
+        dialog.show()
 
 class DecisionTree(QMainWindow):
     #::--------------------------------------------------------------------------------
@@ -510,6 +564,9 @@ class DecisionTree(QMainWindow):
         self.btnRoc_Execute = QPushButton("Plot ROC")
         self.btnRoc_Execute.clicked.connect(self.roc_update)
 
+        self.btnImp_Execute = QPushButton("Imp_Features")
+        self.btnImp_Execute.clicked.connect(self.imp_update)
+
         self.btnDTFigure = QPushButton("View Tree")
         self.btnDTFigure.clicked.connect(self.view_tree)
 
@@ -531,6 +588,7 @@ class DecisionTree(QMainWindow):
         self.groupBox1Layout.addWidget(self.txtMaxDepth, 8, 1)
         self.groupBox1Layout.addWidget(self.btnExecute, 9, 0)
         self.groupBox1Layout.addWidget(self.btnRoc_Execute, 9, 1)
+        self.groupBox1Layout.addWidget(self.btnImp_Execute, 10, 0)
         self.groupBox1Layout.addWidget(self.btnDTFigure, 10, 1)
 
         self.groupBox2 = QGroupBox('Results from the Gini model')
@@ -729,6 +787,19 @@ class DecisionTree(QMainWindow):
         self.fpr_gini, self.tpr_gini, _ = roc_curve(y_test, y_pred_score_gini[:, 1])
         self.auc_gini = roc_auc_score(y_test, y_pred_score_gini[:, 1])
 
+        #important features
+
+        importances_gini = self.clf_df_gini.feature_importances_
+
+        # convert the importances into one-dimensional 1darray with corresponding df column names as axis labels
+        f_importances_gini = pd.Series(importances_gini, self.current_features.columns)
+
+        # sort the array in descending order of the importances
+        f_importances_gini.sort_values(ascending=True, inplace=True)
+
+        self.X_Features_gini = f_importances_gini.index
+        self.y_Importance_gini = list(f_importances_gini)
+
         #::------------------------------------
         ##  Ghaph1 :
         ##  Confusion Matrix
@@ -781,6 +852,19 @@ class DecisionTree(QMainWindow):
         self.fpr_entropy, self.tpr_entropy, _ = roc_curve(y_test, y_pred_score_entropy[:, 1])
         self.auc_entropy = roc_auc_score(y_test, y_pred_score_entropy[:, 1])
 
+        #important features
+
+        importances_entropy = self.clf_df_entropy.feature_importances_
+
+        # convert the importances into one-dimensional 1darray with corresponding df column names as axis labels
+        f_importances_entropy = pd.Series(importances_entropy, self.current_features.columns)
+
+        # sort the array in descending order of the importances
+        f_importances_entropy.sort_values(ascending=True, inplace=True)
+
+        self.X_Features_entropy = f_importances_entropy.index
+        self.y_Importance_entropy = list(f_importances_entropy)
+
         #::------------------------------------
         ##  Graph2 :
         ##  Confusion Matrix - entropy model
@@ -828,6 +912,31 @@ class DecisionTree(QMainWindow):
         dialog.roc.ax.set_ylabel("True Positive Rate")
         dialog.roc.ax.legend(loc="lower right")
         dialog.roc.draw()
+        dialog.show()
+
+    def imp_update(self):
+        # gini model
+        dialog = Imp_Main(self)
+
+        dialog.imp.plot()
+        dialog.imp.ax.barh(self.X_Features_gini, self.y_Importance_gini)
+        dialog.imp.ax.set_title('Important features - Gini model')
+        dialog.imp.ax.set_xlabel("Importance")
+        dialog.imp.ax.set_ylabel("Features")
+        dialog.imp.fig.tight_layout()
+        dialog.imp.draw()
+        dialog.show()
+
+        # entropy model
+        dialog = Imp_Main(self)
+
+        dialog.imp.plot()
+        dialog.imp.ax.barh(self.X_Features_entropy, self.y_Importance_entropy)
+        dialog.imp.ax.set_title('Important features - Entropy model')
+        dialog.imp.ax.set_xlabel("Importance")
+        dialog.imp.ax.set_ylabel("Features")
+        dialog.imp.fig.tight_layout()
+        dialog.imp.draw()
         dialog.show()
 
     def view_tree(self):
@@ -1006,9 +1115,9 @@ class SupportVector(QMainWindow):
 
     def update(self):
         '''
-        Random Forest Classifier
-        We pupulate the dashboard using the parametres chosen by the user
-        The parameters are processed to execute in the skit-learn Random Forest algorithm
+        Support Vector Classifier
+        We pupulate the dashboard using the parameters chosen by the user
+        The parameters are processed to execute in the skit-learn Support Vector algorithm
           then the results are presented in graphics and reports in the canvas
 
         '''
@@ -1094,6 +1203,7 @@ class SupportVector(QMainWindow):
         self.fpr, self.tpr, _ = roc_curve(y_test, y_pred_score)
         self.auc = roc_auc_score(y_test, y_pred_score)
 
+
         #::------------------------------------
         ##  Graph1 :
         ##  Confusion Matrix
@@ -1124,17 +1234,19 @@ class SupportVector(QMainWindow):
         dialog.roc.ax.legend(loc="lower right")
         dialog.roc.draw()
         dialog.show()
-
-
-class ROC_Plot(FigureCanvas):
+#---------------------------------------------------------
+# Class to Plot any Graph, used from ROC_Main()
+# Imp_Main() classes
+#----------------------------------------------------------
+class Plotter(FigureCanvas):
     #::----------------------------------------------------------
     # creates a figure on the canvas
     # later on this element will be used to draw a ROC curve
     #::----------------------------------------------------------
     def __init__(self, parent=None, width=7, height=6, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
 
-        FigureCanvas.__init__(self, fig)
+        FigureCanvas.__init__(self, self.fig)
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
@@ -1144,8 +1256,33 @@ class ROC_Plot(FigureCanvas):
 
     def plot(self):
         self.ax = self.figure.add_subplot(111)
+#---------------------------------------------------------
+# Class to plot Importance of features
+#----------------------------------------------------------
+class Imp_Main(QMainWindow):
+    #::----------------------------------
+    # Creates a canvas containing the plot for the ROC curve
+    # ;;----------------------------------
+    def __init__(self, parent=None):
+        super(Imp_Main, self).__init__(parent)
 
+        self.left = 100
+        self.top = 100
+        self.Title = 'Importance Bar plot'
+        self.width = 1100
+        self.height = 850
+        self.initUI()
 
+    def initUI(self):
+        self.setWindowTitle(self.Title)
+        self.setStyleSheet(font_size_window)
+
+        self.setGeometry(self.left, self.top, self.width, self.height)
+
+        self.imp = Plotter(self, width=11, height=8.5)
+#---------------------------------------------------------
+# Class to plot ROC curves
+#----------------------------------------------------------
 class ROC_Main(QMainWindow):
     #::----------------------------------
     # Creates a canvas containing the plot for the ROC curve
@@ -1166,7 +1303,7 @@ class ROC_Main(QMainWindow):
 
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        self.roc = ROC_Plot(self, width=7, height=6)
+        self.roc = Plotter(self, width=7, height=6)
 
 #-----------------------------------
 # Class to display the histogram window
