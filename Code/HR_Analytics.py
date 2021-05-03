@@ -103,7 +103,7 @@ class RandomForest(QMainWindow):
         self.main_widget = QWidget(self)
 
         self.layout = QGridLayout(self.main_widget)
-
+        # create groupbox1
         self.groupBox1 = QGroupBox('Random Forest Features')
         self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
@@ -157,7 +157,7 @@ class RandomForest(QMainWindow):
         self.groupBox1Layout.addWidget(self.btnExecute, 9, 0)
         self.groupBox1Layout.addWidget(self.btnRoc_Execute, 9, 1)
         self.groupBox1Layout.addWidget(self.btnImp_Execute, 10, 0)
-
+        # create groupbox2
         self.groupBox2 = QGroupBox('Results from the Gini model')
         self.groupBox2Layout = QVBoxLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
@@ -176,7 +176,7 @@ class RandomForest(QMainWindow):
         self.groupBox2Layout.addWidget(self.txtAccuracy1)
         self.groupBox2Layout.addWidget(self.lblRoc_auc1)
         self.groupBox2Layout.addWidget(self.txtRoc_auc1)
-
+        # create groupbox3
         self.groupBox3 = QGroupBox('Results from the Entropy model')
         self.groupBox3Layout = QVBoxLayout()
         self.groupBox3.setLayout(self.groupBox3Layout)
@@ -250,6 +250,7 @@ class RandomForest(QMainWindow):
     def Message(self):
         QMessageBox.about(self, "Warning", " You have not selected any features")
     def update1(self):
+        # update the current features with selected features from checkboxes
         self.current_features = pd.DataFrame([])
         self.notchecked=0
         for i in range(12):
@@ -261,8 +262,10 @@ class RandomForest(QMainWindow):
             else:
                 self.notchecked+=1
         if self.notchecked==12:
+            # if no variable is selected show error
             self.Message()
         else:
+            #proceed to build model
             self.update()
 
     def update(self):
@@ -273,7 +276,7 @@ class RandomForest(QMainWindow):
         then the results are presented in graphics and reports in the canvas
         
         '''
-
+        #getting the test percent and estimators number values from the GUI
         vtest_per = float(self.txtPercentTest.text())
         n_esti = int(self.txtNumberesti.text())
         # Clear the graphs to populate them with the new information
@@ -289,10 +292,11 @@ class RandomForest(QMainWindow):
 
         vtest_per = vtest_per / 100
 
-        # # label encoding the categorical data
+        # label encoding the categorical data
         class_le1 = LabelEncoder()
 
         if self.notchecked==11:
+            # if only one variable is selected
             self.current_features=class_le1.fit_transform(self.current_features)
             X=self.current_features
             X=X.reshape(-1,1)
@@ -448,6 +452,7 @@ class RandomForest(QMainWindow):
         self.fig2.canvas.draw_idle()
 
     def roc_update(self):
+        # This is used to plot the ROC curves of the two models
         # gini model
         dialog = ROC_Main(self)
 
@@ -480,6 +485,7 @@ class RandomForest(QMainWindow):
         dialog.show()
 
     def imp_update(self):
+        # this is used to plot importance of features plot for two models
         # gini model
         dialog = Imp_Main(self)
 
@@ -534,7 +540,7 @@ class DecisionTree(QMainWindow):
         self.main_widget = QWidget(self)
 
         self.layout = QGridLayout(self.main_widget)
-
+        # create groupbox1
         self.groupBox1 = QGroupBox('Decision Tree Features')
         self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
@@ -590,7 +596,7 @@ class DecisionTree(QMainWindow):
         self.groupBox1Layout.addWidget(self.btnRoc_Execute, 9, 1)
         self.groupBox1Layout.addWidget(self.btnImp_Execute, 10, 0)
         self.groupBox1Layout.addWidget(self.btnDTFigure, 10, 1)
-
+        # create groupbox2
         self.groupBox2 = QGroupBox('Results from the Gini model')
         self.groupBox2Layout = QVBoxLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
@@ -609,7 +615,7 @@ class DecisionTree(QMainWindow):
         self.groupBox2Layout.addWidget(self.txtAccuracy1)
         self.groupBox2Layout.addWidget(self.lblRoc_auc1)
         self.groupBox2Layout.addWidget(self.txtRoc_auc1)
-
+        # create groupbox3
         self.groupBox3 = QGroupBox('Results from the Entropy model')
         self.groupBox3Layout = QVBoxLayout()
         self.groupBox3.setLayout(self.groupBox3Layout)
@@ -670,7 +676,7 @@ class DecisionTree(QMainWindow):
         #::-------------------------------------------------
         # End of graphs
         #::-------------------------------------------------
-
+        # update all the groupboxes to main layout
         self.layout.addWidget(self.groupBox1, 0, 0)
         self.layout.addWidget(self.groupBoxG1, 0, 1)
         self.layout.addWidget(self.groupBox2, 1, 1)
@@ -683,7 +689,7 @@ class DecisionTree(QMainWindow):
     def Message(self):
         QMessageBox.about(self, "Warning", " You have not selected any features")
     def update1(self):
-        # processing the parameters
+        # update the current features with selected variables from checkboxes
         self.current_features = pd.DataFrame([])
         self.notchecked=0
         for i in range(12):
@@ -696,8 +702,10 @@ class DecisionTree(QMainWindow):
                 self.notchecked+=1
 
         if self.notchecked==12:
+            # if no variable is selected show a popup warning 
             self.Message()
         else:
+            # proceed to model building
             self.update()
 
     def update(self):
@@ -709,7 +717,7 @@ class DecisionTree(QMainWindow):
         :return:None
         '''
 
-
+        # getting test percent and model depth values from GUI
         vtest_per = float(self.txtPercentTest.text())
         vmax_depth = float(self.txtMaxDepth.text())
         # Clear the graphs to populate them with the new information
@@ -730,6 +738,7 @@ class DecisionTree(QMainWindow):
         # label encoding the categorical data
         class_le1 = LabelEncoder()
         if self.notchecked==11:
+            # if only one variable is selected
             self.current_features=class_le1.fit_transform(self.current_features)
             X=self.current_features
             X=X.reshape(-1,1)
@@ -883,6 +892,9 @@ class DecisionTree(QMainWindow):
         self.fig2.canvas.draw_idle()
 
     def roc_update(self):
+        '''
+        This is used to plot the ROC curves of the two models
+        '''
         # gini model
         dialog = ROC_Main(self)
 
@@ -915,6 +927,7 @@ class DecisionTree(QMainWindow):
         dialog.show()
 
     def imp_update(self):
+        # This is used to plot the importance of features plot for the two models
         # gini model
         dialog = Imp_Main(self)
 
@@ -993,7 +1006,7 @@ class SupportVector(QMainWindow):
         self.main_widget = QWidget(self)
 
         self.layout = QGridLayout(self.main_widget)
-
+        # create groupbox1
         self.groupBox1 = QGroupBox('Support Vector Features')
         self.groupBox1Layout = QGridLayout()
         self.groupBox1.setLayout(self.groupBox1Layout)
@@ -1043,7 +1056,7 @@ class SupportVector(QMainWindow):
         self.groupBox1Layout.addWidget(self.txtKernelType, 8, 1)
         self.groupBox1Layout.addWidget(self.btnExecute, 9, 0)
         self.groupBox1Layout.addWidget(self.btnRoc_Execute, 10, 0)
-
+        # create groupbox1
         self.groupBox2 = QGroupBox('Results from the SVC model')
         self.groupBox2Layout = QVBoxLayout()
         self.groupBox2.setLayout(self.groupBox2Layout)
@@ -1096,7 +1109,7 @@ class SupportVector(QMainWindow):
     def Message(self):
         QMessageBox.about(self, "Warning", " You have not selected any features")
     def update1(self):
-        # processing the parameters
+        # update the current features with the selected variables from the checkboxes
         self.current_features = pd.DataFrame([])
         self.notchecked=0
         for i in range(12):
@@ -1109,8 +1122,10 @@ class SupportVector(QMainWindow):
                 self.notchecked+=1
 
         if self.notchecked==12:
+            # if no variable is selected popup a warning message
             self.Message()
         else:
+            # proceed to model building
             self.update()
 
     def update(self):
@@ -1121,7 +1136,7 @@ class SupportVector(QMainWindow):
           then the results are presented in graphics and reports in the canvas
 
         '''
-
+        # getting the test percent and kernel type values from the GUI
         vtest_per = float(self.txtPercentTest.text())
         kernel1 = self.txtKernelType.text()
         # Clear the graphs to populate them with the new information
@@ -1136,6 +1151,7 @@ class SupportVector(QMainWindow):
         # Assign the X and y to run the support vector classifier
         class_le1 = LabelEncoder()
         if self.notchecked==11:
+            # if only one variable is selected
             self.current_features=class_le1.fit_transform(self.current_features)
             X=self.current_features
             X=X.reshape(-1,1)
@@ -1167,11 +1183,11 @@ class SupportVector(QMainWindow):
         # perform training with entropy.
 
         #::------------------------------------
-        ##  Model 1 - gini model:
+        ##  Model  - SVC model:
 
         #::------------------------------------
 
-        # specify random forest classifier
+        # specify support vector classifier
         self.clf_svc = SVC(kernel=kernel1)
 
         # perform training
@@ -1183,7 +1199,7 @@ class SupportVector(QMainWindow):
         y_pred = self.clf_svc.predict(X_test)
         y_pred_score = self.clf_svc.decision_function(X_test)
 
-        # confusion matrix for RandomForest
+        # confusion matrix for support vector
         conf_matrix = confusion_matrix(y_test, y_pred)
 
         # clasification report
@@ -1222,6 +1238,7 @@ class SupportVector(QMainWindow):
         self.fig1.canvas.draw_idle()
 
     def roc_update(self):
+        # plot the roc curve of the SVC model
         dialog = ROC_Main(self)
         dialog.roc.plot()
         dialog.roc.ax.plot(self.fpr, self.tpr, color='#90EE90', lw=3, label='ROC curve (area = %0.2f)' % self.auc)
@@ -1234,6 +1251,7 @@ class SupportVector(QMainWindow):
         dialog.roc.ax.legend(loc="lower right")
         dialog.roc.draw()
         dialog.show()
+
 #---------------------------------------------------------
 # Class to Plot any Graph, used from ROC_Main()
 # Imp_Main() classes
@@ -1256,6 +1274,7 @@ class Plotter(FigureCanvas):
 
     def plot(self):
         self.ax = self.figure.add_subplot(111)
+
 #---------------------------------------------------------
 # Class to plot Importance of features
 #----------------------------------------------------------
@@ -1280,6 +1299,7 @@ class Imp_Main(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.imp = Plotter(self, width=11, height=8.5)
+
 #---------------------------------------------------------
 # Class to plot ROC curves
 #----------------------------------------------------------
@@ -1404,6 +1424,7 @@ class Histogram_plots(QMainWindow):
             self.ax1.set_ylabel('frequency')
             self.fig1.tight_layout()
             self.fig1.canvas.draw_idle()
+
 #----------------------------------------------
 # Class to display the scatter plot window
 #-----------------------------------------------
@@ -1561,6 +1582,7 @@ class Scatter_plots(QMainWindow):
         elif self.work_x == 1 and self.work_y == 1:
             self.Message_x()
             self.Message_y()
+
 #---------------------------------------------------------
 # Class to take dataset from user
 #----------------------------------------------------------
@@ -1630,7 +1652,9 @@ class Data_find(QMainWindow):
             global class_names
             global features_list_hist
             data = pd.read_csv(path1)
+            # drop the "enrollee_id" variable
             data.drop(["enrollee_id"], axis=1, inplace=True)
+            # fill the missing values with highest repeated value in that column
             data = data.apply(lambda x: x.fillna(x.value_counts().index[0]))
             features_list = data.iloc[:, :-1].columns
             features_list_hist = data.columns
@@ -1638,14 +1662,17 @@ class Data_find(QMainWindow):
             self.list1 = 'These are the list of features in the dataset :'
             for name in data.columns:
                 self.list1 += '\n' + name + '\n'
-
+            # display the list of features in the dataset on GUI
             self.txtResults1.appendPlainText(self.list1)
             global upload1
             upload1=1
         else:
+            # popup a warning message that dataset path does not exist
             self.Message()
 
-
+#---------------------------------------------------------
+# Main application class
+#----------------------------------------------------------
 class App(QMainWindow):
     #::-------------------------------------------------------
     # This class creates all the elements of the application
@@ -1776,7 +1803,9 @@ class App(QMainWindow):
         self.dialogs = list()
 
     def getComboValue(self):
+        # drop down for eda analysis
         if upload1==0:
+            # popup a warning message that dataset is not uploaded
             self.Message_up()
         else:
             if self.comboBox.currentText() == 'Histogram':
@@ -1785,7 +1814,9 @@ class App(QMainWindow):
                 self.EDA2()
 
     def getComboValue1(self):
+        # drop down for ML models
         if upload1==0:
+            # popup a warning message that dataset is not uploaded
             self.Message_up()
         else:
             if self.comboBox1.currentText() == 'Decision Tree Classifier':
